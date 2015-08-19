@@ -3,6 +3,15 @@ package tetris;
 /**
  * Created by Zain on 8/18/2015.
  */
+
+/**
+ * NOTE:
+ * The second element in all 4-block Tetris pieces: pieceX[1] and pieceY[1],
+   is set as the universal pivot-point. All pieces rotate around the
+   pieceX[1] and pieceY[1] block! So the rotation algorithm is relative
+   to the position of pieceX[1] and pieceY[1] on the game grid.
+ */
+
 public class GameGrid implements Runnable {
 
     //set the game grid
@@ -38,26 +47,28 @@ public class GameGrid implements Runnable {
         //constantly check for full grid lines, remove them, and award point
         clearLines();
 
-        //code to update the grid array with the piece codes.
-        if (piece.getGenNewPiece()) {
+        //code to update the grid values with the piece codes.
+        if (!lose() && piece.getGenNewPiece()) {
             piece.newPieceNum();
             pieceX = piece.getPieceX();
             pieceY = piece.getPieceY();
             for (int i = 0; i < 4; i++) {
-                gridArray[pieceX[i]][pieceY[i]] = piece.getPieceNum();
+                gridArray[pieceX[i]][pieceY[i]] = piece.getPieceNum();     //set grid
             }
         }
 
-        //after game is set, start dropping pieces simultaneously: launch Thread
-        if (!dropPiece.isAlive())
+        //after game is set, start dropping pieces simultaneously: launch Thread ONCE!
+        if (!dropPiece.isAlive()) {
             dropPiece.start();
+        }
 
         //Changing drop time based on lines cleared: difficulty
-        if (difficulty > 500) {
+        if (difficulty > 350) {
             difficulty = 1300 - (lineScore / 5) * 100;
         }
     }
 
+    //dropPiece thread
     @Override
     public void run() {
         while (true) {
@@ -102,8 +113,7 @@ public class GameGrid implements Runnable {
 
     public void keyDown() {
         if (checkBounds("down")) {
-            for (int i = 0; i < 4; i++)
-                gridArray[pieceX[i]][pieceY[i]] = 0;
+            clearOld();
             for (int i = 0; i < 4; i++) {
                 pieceY[i]++;
                 gridArray[pieceX[i]][pieceY[i]] = piece.getPieceNum();
@@ -127,9 +137,10 @@ public class GameGrid implements Runnable {
                 pieceYCopy[i] = pieceY[i];
             }
 
-            //rotation algorithm
-            if (piece.getPieceNum() != 7) {
+            /**rotation algorithm*/
+            if (piece.getPieceNum() != 7) {         //square piece (7) doesn't need to rotate
 
+                //special case for straight piece (3)
                 if (piece.getPieceNum() == 3) {
                     gridArray[pieceX[1]][(pieceY[1]) - 2] = gridCopy[pieceXCopy[1] + 2][pieceYCopy[1]];
                     for (int i = 0; i < 4; i++) {
@@ -161,6 +172,7 @@ public class GameGrid implements Runnable {
                     }
                 }
 
+                //all other pieces go through this process
                 gridArray[pieceX[1]][(pieceY[1]) - 1] = gridCopy[pieceXCopy[1] + 1][pieceYCopy[1]];
                 for (int i = 0; i < 4; i++) {
                     if ((pieceXCopy[i] == pieceXCopy[1] + 1) && (pieceYCopy[i] == pieceYCopy[1])) {
@@ -221,6 +233,7 @@ public class GameGrid implements Runnable {
         }
     }
 
+    //check if piece can move/rotate
     public boolean checkBounds(String key) {
 
         if (key.equals("left")) {
@@ -242,7 +255,8 @@ public class GameGrid implements Runnable {
                         piece.setGenNewPiece(true);
                         return false;
                     }
-        } else if (key.equals("up"))
+        } else if (key.equals("up")) {
+
             if (piece.getPieceNum() != 7 && piece.getPieceNum() != 3)
                 for (int i = 0; i < 4; i++) {
                     if (pieceY[1] == 0)
@@ -251,11 +265,18 @@ public class GameGrid implements Runnable {
                         keyRight();
                     if (pieceX[1] == col - 1)
                         keyLeft();
+
+                    for (int j = 0; j < staticCode.length; j++)
+                    if (gridArray[pieceX[1] + 1][pieceY[1]] == staticCode[j] || gridArray[pieceX[1] - 1][pieceY[1]] == staticCode[j]
+                            || gridArray[pieceX[1]][pieceY[1] + 1] == staticCode[j] || gridArray[pieceX[1]][pieceY[1] - 1] == staticCode[j]
+                            || gridArray[pieceX[1] + 1][pieceY[1] + 1] == staticCode[j] || gridArray[pieceX[1] + 1][pieceY[1] - 1] == staticCode[j]
+                            || gridArray[pieceX[1] - 1][pieceY[1] + 1] == staticCode[j] || gridArray[pieceX[1] - 1][pieceY[1] - 1] == staticCode[j])
+                        return false;
                 }
 
             else if (piece.getPieceNum() != 7 && piece.getPieceNum() == 3)
                 for (int i = 0; i < 4; i++) {
-                    if (pieceY[1] == 0) {
+                    if (pieceY[0] == 0) {
                         keyDown();
                         keyDown();
                     }
@@ -267,16 +288,28 @@ public class GameGrid implements Runnable {
                         keyLeft();
                         keyLeft();
                     }
+
+                    for (int j = 0; j < staticCode.length; j++)
+                    if (gridArray[pieceX[1] + 1][pieceY[1]] == staticCode[j] || gridArray[pieceX[1] - 1][pieceY[1]] == staticCode[j]
+                            || gridArray[pieceX[1]][pieceY[1] + 1] == staticCode[j] || gridArray[pieceX[1]][pieceY[1] - 1] == staticCode[j]
+                            || gridArray[pieceX[1] + 1][pieceY[1] + 1] == staticCode[j] || gridArray[pieceX[1] + 1][pieceY[1] - 1] == staticCode[j]
+                            || gridArray[pieceX[1] - 1][pieceY[1] + 1] == staticCode[j] || gridArray[pieceX[1] - 1][pieceY[1] - 1] == staticCode[j]
+                            || gridArray[pieceX[1] + 2][pieceY[1]] == staticCode[j] || gridArray[pieceX[1] - 2][pieceY[1]] == staticCode[j]
+                            || gridArray[pieceX[1]][pieceY[1] + 2] == staticCode[j] || gridArray[pieceX[1]][pieceY[1] - 2] == staticCode[j])
+                        return false;
                 }
+        }
 
         return true;
     }
 
+    //clear old location if piece is moved
     public void clearOld() {
         for (int i = 0; i < 4; i++)
             gridArray[pieceX[i]][pieceY[i]] = 0;
     }
 
+    //remove full rows
     public void clearLines() {
         int blocks = 0;
 
@@ -304,12 +337,50 @@ public class GameGrid implements Runnable {
                 for (int i = 0; i < col; i++) {
                     gridArray[i][f] = 0;
                     for (int j = f; j > 0; j--) {
+                        if (gridArray[i][j - 1] != piece.getPieceNum())
                         gridArray[i][j] = gridArray[i][j - 1];
                     }
                 }
                 lineScore++;
             }
         }
+    }
+
+    //losing condition
+    public boolean lose() {
+        for (int i = 4; i < 8; i++)
+            for (int j = 0; j < staticCode.length; j++)
+                if (gridArray[i][1] == staticCode[j]) {
+                    return true;
+                }
+        return false;
+    }
+
+    //will soon implement:
+    public void ghostPiece()
+    {
+        int [] ghostX = piece.getGhostX();
+        int [] ghostY = piece.getGhostY();
+
+        while (ghostBounds(ghostX, ghostY))
+        {
+            for (int i = 0; i < 4; i++)
+                ghostY[i]++;
+        }
+    }
+
+    public boolean ghostBounds (int[]x, int[]y)
+    {
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < staticCode.length; j++)
+                if (y[i] == (row - 1) || gridArray[x[i]][(y[i]) + 1] == staticCode[j])
+                {
+                    for (int k = 0; k < 4; k++)
+                        gridArray[x[k]][y[k]] = 99;
+                    return false;
+                }
+
+        return true;
     }
 
     public static int getCol() {

@@ -15,8 +15,12 @@ public class TetrisPiece {
     //keep track of the 4-block pieces in 2D
     private int[] pieceX = new int[4];
     private int[] pieceY = new int[4];
+    private int[] ghostX = new int[4];
+    private int[] ghostY = new int[4];
     private int pieceNum = 0;
     private Color pieceColor;
+
+    private int ghostCode = 99;
 
     private boolean genNewPiece = true;
 
@@ -28,8 +32,11 @@ public class TetrisPiece {
         Random rand = new Random();
         pieceNum = (rand.nextInt(7)) + 1;
         setPiece(pieceNum);
+        ghostX = pieceX;
+        ghostY = pieceY;
     }
 
+    //select a piece
     public void setPiece(int i) {
         switch (i) {
             case 1:
@@ -116,6 +123,18 @@ public class TetrisPiece {
         }
 
         genNewPiece = false;
+    }
+
+    public int getGhostCode() {
+        return ghostCode;
+    }
+
+    public int[] getGhostX() {
+        return ghostX;
+    }
+
+    public int[] getGhostY() {
+        return ghostY;
     }
 
     public boolean getGenNewPiece() {
