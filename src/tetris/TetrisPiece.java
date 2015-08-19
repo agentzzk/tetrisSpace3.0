@@ -17,7 +17,6 @@ public class TetrisPiece {
     private int[] pieceY = new int[4];
     private int pieceNum = 0;
     private Color pieceColor;
-    //keep track of pivot point for all 7 pieces in 2D
 
     private boolean genNewPiece = true;
 

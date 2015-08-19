@@ -3,7 +3,7 @@ package tetris;
 /**
  * Created by Zain on 8/18/2015.
  */
-public class GameGrid implements Runnable{
+public class GameGrid implements Runnable {
 
     //set the game grid
     private static final int col = 12;
@@ -49,12 +49,11 @@ public class GameGrid implements Runnable{
         }
 
         //after game is set, start dropping pieces simultaneously: launch Thread
-        if(!dropPiece.isAlive())
+        if (!dropPiece.isAlive())
             dropPiece.start();
 
         //Changing drop time based on lines cleared: difficulty
-        if (difficulty > 500)
-        {
+        if (difficulty > 500) {
             difficulty = 1300 - (lineScore / 5) * 100;
         }
     }
@@ -113,80 +112,110 @@ public class GameGrid implements Runnable{
     }
 
     public void keyUp() {
+        if (checkBounds("up")) {
+            int pieceXCopy[] = new int[4];
+            int pieceYCopy[] = new int[4];
+            int gridCopy[][] = new int[col][row];
 
-        int pieceXCopy[] = new int[4];
-        int pieceYCopy[] = new int[4];
-        int gridCopy[][] = new int[col][row];
+            for (int i = 0; i < col; i++)
+                for (int j = 0; j < row; j++) {
+                    gridCopy[i][j] = gridArray[i][j];
+                }
 
-        for (int i = 0; i < col; i++)
-            for (int j = 0; j < row; j++) {
-                gridCopy[i][j] = gridArray[i][j];
+            for (int i = 0; i < pieceXCopy.length; i++) {
+                pieceXCopy[i] = pieceX[i];
+                pieceYCopy[i] = pieceY[i];
             }
 
-        for (int i = 0; i < pieceXCopy.length; i++) {
-            pieceXCopy[i] = pieceX[i];
-            pieceYCopy[i] = pieceY[i];
-        }
+            //rotation algorithm
+            if (piece.getPieceNum() != 7) {
 
-        //rotation algorithm
-        if (piece.getPieceNum() == 3)          //special case for straight piece
-        {
+                if (piece.getPieceNum() == 3) {
+                    gridArray[pieceX[1]][(pieceY[1]) - 2] = gridCopy[pieceXCopy[1] + 2][pieceYCopy[1]];
+                    for (int i = 0; i < 4; i++) {
+                        if ((pieceXCopy[i] == pieceXCopy[1] + 2) && (pieceYCopy[i] == pieceYCopy[1])) {
+                            pieceX[i] = pieceXCopy[1];
+                            pieceY[i] = pieceYCopy[1] - 2;
+                        }
+                    }
+                    gridArray[pieceX[1]][(pieceY[1]) + 2] = gridCopy[pieceXCopy[1] - 2][pieceYCopy[1]];
+                    for (int i = 0; i < 4; i++) {
+                        if ((pieceXCopy[i] == pieceXCopy[1] - 2) && (pieceYCopy[i] == pieceYCopy[1])) {
+                            pieceX[i] = pieceXCopy[1];
+                            pieceY[i] = pieceYCopy[1] + 2;
+                        }
+                    }
+                    gridArray[(pieceX[1]) + 2][pieceY[1]] = gridCopy[pieceXCopy[1]][pieceYCopy[1] + 2];
+                    for (int i = 0; i < 4; i++) {
+                        if ((pieceXCopy[i] == pieceXCopy[1]) && (pieceYCopy[i] == pieceYCopy[1] + 2)) {
+                            pieceX[i] = pieceXCopy[1] + 2;
+                            pieceY[i] = pieceYCopy[1];
+                        }
+                    }
+                    gridArray[(pieceX[1]) - 2][pieceY[1]] = gridCopy[pieceXCopy[1]][pieceYCopy[1] - 2];
+                    for (int i = 0; i < 4; i++) {
+                        if ((pieceXCopy[i] == pieceXCopy[1]) && (pieceYCopy[i] == pieceYCopy[1] - 2)) {
+                            pieceX[i] = pieceXCopy[1] - 2;
+                            pieceY[i] = pieceYCopy[1];
+                        }
+                    }
+                }
 
-        } else if (piece.getPieceNum() != 7) {
-            gridArray[pieceX[1]][(pieceY[1]) - 1] = gridCopy[pieceXCopy[1] + 1][pieceYCopy[1]];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1] + 1) && (pieceYCopy[i] == pieceYCopy[1])) {
-                    pieceX[i] = pieceXCopy[1];
-                    pieceY[i] = pieceYCopy[1] - 1;
+                gridArray[pieceX[1]][(pieceY[1]) - 1] = gridCopy[pieceXCopy[1] + 1][pieceYCopy[1]];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1] + 1) && (pieceYCopy[i] == pieceYCopy[1])) {
+                        pieceX[i] = pieceXCopy[1];
+                        pieceY[i] = pieceYCopy[1] - 1;
+                    }
                 }
-            }
-            gridArray[pieceX[1]][(pieceY[1]) + 1] = gridCopy[pieceXCopy[1] - 1][pieceYCopy[1]];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1] - 1) && (pieceYCopy[i] == pieceYCopy[1])) {
-                    pieceX[i] = pieceXCopy[1];
-                    pieceY[i] = pieceYCopy[1] + 1;
+                gridArray[pieceX[1]][(pieceY[1]) + 1] = gridCopy[pieceXCopy[1] - 1][pieceYCopy[1]];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1] - 1) && (pieceYCopy[i] == pieceYCopy[1])) {
+                        pieceX[i] = pieceXCopy[1];
+                        pieceY[i] = pieceYCopy[1] + 1;
+                    }
                 }
-            }
-            gridArray[(pieceX[1]) + 1][pieceY[1]] = gridCopy[pieceXCopy[1]][pieceYCopy[1] + 1];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1]) && (pieceYCopy[i] == pieceYCopy[1] + 1)) {
-                    pieceX[i] = pieceXCopy[1] + 1;
-                    pieceY[i] = pieceYCopy[1];
+                gridArray[(pieceX[1]) + 1][pieceY[1]] = gridCopy[pieceXCopy[1]][pieceYCopy[1] + 1];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1]) && (pieceYCopy[i] == pieceYCopy[1] + 1)) {
+                        pieceX[i] = pieceXCopy[1] + 1;
+                        pieceY[i] = pieceYCopy[1];
+                    }
                 }
-            }
-            gridArray[(pieceX[1]) - 1][pieceY[1]] = gridCopy[pieceXCopy[1]][pieceYCopy[1] - 1];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1]) && (pieceYCopy[i] == pieceYCopy[1] - 1)) {
-                    pieceX[i] = pieceXCopy[1] - 1;
-                    pieceY[i] = pieceYCopy[1];
+                gridArray[(pieceX[1]) - 1][pieceY[1]] = gridCopy[pieceXCopy[1]][pieceYCopy[1] - 1];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1]) && (pieceYCopy[i] == pieceYCopy[1] - 1)) {
+                        pieceX[i] = pieceXCopy[1] - 1;
+                        pieceY[i] = pieceYCopy[1];
+                    }
                 }
-            }
-            gridArray[(pieceX[1]) - 1][(pieceY[1]) - 1] = gridCopy[pieceXCopy[1] + 1][pieceYCopy[1] - 1];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1] + 1) && (pieceYCopy[i] == pieceYCopy[1] - 1)) {
-                    pieceX[i] = pieceXCopy[1] - 1;
-                    pieceY[i] = pieceYCopy[1] - 1;
+                gridArray[(pieceX[1]) - 1][(pieceY[1]) - 1] = gridCopy[pieceXCopy[1] + 1][pieceYCopy[1] - 1];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1] + 1) && (pieceYCopy[i] == pieceYCopy[1] - 1)) {
+                        pieceX[i] = pieceXCopy[1] - 1;
+                        pieceY[i] = pieceYCopy[1] - 1;
+                    }
                 }
-            }
-            gridArray[(pieceX[1]) - 1][(pieceY[1]) + 1] = gridCopy[pieceXCopy[1] - 1][pieceYCopy[1] - 1];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1] - 1) && (pieceYCopy[i] == pieceYCopy[1] - 1)) {
-                    pieceX[i] = pieceXCopy[1] - 1;
-                    pieceY[i] = pieceYCopy[1] + 1;
+                gridArray[(pieceX[1]) - 1][(pieceY[1]) + 1] = gridCopy[pieceXCopy[1] - 1][pieceYCopy[1] - 1];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1] - 1) && (pieceYCopy[i] == pieceYCopy[1] - 1)) {
+                        pieceX[i] = pieceXCopy[1] - 1;
+                        pieceY[i] = pieceYCopy[1] + 1;
+                    }
                 }
-            }
-            gridArray[(pieceX[1]) + 1][(pieceY[1]) - 1] = gridCopy[pieceXCopy[1] + 1][pieceYCopy[1] + 1];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1] + 1) && (pieceYCopy[i] == pieceYCopy[1] + 1)) {
-                    pieceX[i] = pieceXCopy[1] + 1;
-                    pieceY[i] = pieceYCopy[1] - 1;
+                gridArray[(pieceX[1]) + 1][(pieceY[1]) - 1] = gridCopy[pieceXCopy[1] + 1][pieceYCopy[1] + 1];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1] + 1) && (pieceYCopy[i] == pieceYCopy[1] + 1)) {
+                        pieceX[i] = pieceXCopy[1] + 1;
+                        pieceY[i] = pieceYCopy[1] - 1;
+                    }
                 }
-            }
-            gridArray[(pieceX[1]) + 1][(pieceY[1]) + 1] = gridCopy[pieceXCopy[1] - 1][pieceYCopy[1] + 1];
-            for (int i = 0; i < 4; i++) {
-                if ((pieceXCopy[i] == pieceXCopy[1] - 1) && (pieceYCopy[i] == pieceYCopy[1] + 1)) {
-                    pieceX[i] = pieceXCopy[1] + 1;
-                    pieceY[i] = pieceYCopy[1] + 1;
+                gridArray[(pieceX[1]) + 1][(pieceY[1]) + 1] = gridCopy[pieceXCopy[1] - 1][pieceYCopy[1] + 1];
+                for (int i = 0; i < 4; i++) {
+                    if ((pieceXCopy[i] == pieceXCopy[1] - 1) && (pieceYCopy[i] == pieceYCopy[1] + 1)) {
+                        pieceX[i] = pieceXCopy[1] + 1;
+                        pieceY[i] = pieceYCopy[1] + 1;
+                    }
                 }
             }
         }
@@ -213,7 +242,32 @@ public class GameGrid implements Runnable{
                         piece.setGenNewPiece(true);
                         return false;
                     }
-        }
+        } else if (key.equals("up"))
+            if (piece.getPieceNum() != 7 && piece.getPieceNum() != 3)
+                for (int i = 0; i < 4; i++) {
+                    if (pieceY[1] == 0)
+                        keyDown();
+                    if (pieceX[1] == 0)
+                        keyRight();
+                    if (pieceX[1] == col - 1)
+                        keyLeft();
+                }
+
+            else if (piece.getPieceNum() != 7 && piece.getPieceNum() == 3)
+                for (int i = 0; i < 4; i++) {
+                    if (pieceY[1] == 0) {
+                        keyDown();
+                        keyDown();
+                    }
+                    if (pieceX[1] == 0) {
+                        keyRight();
+                        keyRight();
+                    }
+                    if (pieceX[1] == col - 1) {
+                        keyLeft();
+                        keyLeft();
+                    }
+                }
 
         return true;
     }
