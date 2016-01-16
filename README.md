@@ -7,6 +7,11 @@ The design of the game is unique and created by me. The implementations of the b
 Feel free to use/modify/improve my core Java code of the game objects and design.
 - It would be awesome if you could post an issue and then fork the repo for improvements
 
+###Details
+- Every block piece is it's own Java object
+- A block object is created and put into the grid object.
+- Starting class is responsible for setting up the appropriate environment (canvas, screen size, drawing graphics, etc.)
+- Game is designed with 2D arrays (grid implementation
 
 Thanks, AgentZ
 ######(i.e. Zain) -> AgentZ is my cool name =)
