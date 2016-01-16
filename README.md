@@ -1,2 +1,4 @@
-Java based Tetris Space game created in grade 10 Intro to Java class. Final Project.
-The media I used was for educational purposes only, I do not claim to have created any of it.
+Java based Tetris game created in grade 10 for my Intro. to Java class. Final Project.
+NOTE: "TETRIS" is copyrighted. This game was inspired by it for educatinal purposes only.
+
+- Object oriented design with Java
