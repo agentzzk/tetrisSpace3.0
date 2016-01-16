@@ -8,5 +8,5 @@ Feel free to use/modify/improve my core Java code of the game objects and design
 - It would be awesome if you could post an issue and then fork the repo for improvements
 
 
-Thanks, Zain
-(AgentZ -> that's my cool nickname)
+Thanks, AgentZ
+######(i.e. Zain) -> AgentZ is my cool name =)
